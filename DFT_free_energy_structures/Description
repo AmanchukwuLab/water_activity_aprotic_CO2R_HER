@@ -1,0 +1,3 @@
+`<solvent>_<intermdediate>.vasp`: Relaxed structure of `<intermediate>` in explicit `<solvent>` environment on Au (100) surface obtained using QE
+
+Note: For just water `<solvent>`, Li was not included in DFT calculations (benchmark calculations)
