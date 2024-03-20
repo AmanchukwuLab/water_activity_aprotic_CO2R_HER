@@ -1,0 +1,3 @@
+`<solvent>_initial.pdb`: Initial configuration used in LAMMPS MD calculations (generated using packmol) for `<solvent>` in 1 M water.
+
+`<solvent>_final.pdb`: Final configuration obtainted after 15 ns MD production run using LAMMPS for `<solvent>` in 1 M water.
