@@ -1,4 +1,4 @@
-# water_activity_CO2R
+# water_activity_aprotic_CO2R_HER
 Repository containing MD and DFT structures for the paper titled, "Modulating water hydrogen bonding within a nonaqueous environment controls its reactivity in electrochemical transformations"
 
 1. `MD_snapshots` directory contains initial and final MD snapshots for each of 1 M water-solvent system (files in `pdb` format)
