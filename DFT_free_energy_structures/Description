@@ -1,4 +1,4 @@
-`<solvent>_t<intermdediate>.vasp`: Relaxed structure of `<intermediate>` in explicit `<solvent>` environment on Au (100) surface obtained using QE
+`<solvent>_t<intermdediate>.cif`: Relaxed structure of `<intermediate>` in explicit `<solvent>` environment on Au (100) surface obtained using QE in cif format
 
 Note: t described state of intermediate, i.e., t = p (physisorbed), c (chemisorbed), a (adsorbed), and d (desorbed)
 
