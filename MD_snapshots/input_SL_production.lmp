@@ -1,0 +1,105 @@
+# created by fftool
+
+units real
+boundary p p p
+
+atom_style full
+bond_style harmonic
+angle_style harmonic
+dihedral_style opls
+
+special_bonds lj/coul 0.0 0.0 0.5
+
+# remove hybrid if not necessary
+pair_style hybrid lj/cut/coul/long 12.0 12.0
+pair_modify mix geometric tail yes
+kspace_style pppm 1.0e-5
+
+#read_data data.lmp
+read_restart restart1.lmp
+
+# remove pair style if not using hybrid
+pair_coeff    1    1 lj/cut/coul/long     0.170000     2.960000  # O00 O00
+pair_coeff    2    2 lj/cut/coul/long     0.250000     3.550000  # S01 S01
+pair_coeff    3    3 lj/cut/coul/long     0.170000     2.960000  # O02 O02
+pair_coeff    4    4 lj/cut/coul/long     0.065999     3.500000  # C03 C03
+pair_coeff    5    5 lj/cut/coul/long     0.065999     3.500000  # C04 C04
+pair_coeff    6    6 lj/cut/coul/long     0.065999     3.500000  # C05 C05
+pair_coeff    7    7 lj/cut/coul/long     0.065999     3.500000  # C06 C06
+pair_coeff    8    8 lj/cut/coul/long     0.030000     2.500000  # H07 H07
+pair_coeff    9    9 lj/cut/coul/long     0.030000     2.500000  # H08 H08
+pair_coeff   10   10 lj/cut/coul/long     0.030000     2.500000  # H09 H09
+pair_coeff   11   11 lj/cut/coul/long     0.030000     2.500000  # H0A H0A
+pair_coeff   12   12 lj/cut/coul/long     0.030000     2.500000  # H0B H0B
+pair_coeff   13   13 lj/cut/coul/long     0.030000     2.500000  # H0C H0C
+pair_coeff   14   14 lj/cut/coul/long     0.030000     2.500000  # H0D H0D
+pair_coeff   15   15 lj/cut/coul/long     0.030000     2.500000  # H0E H0E
+pair_coeff   16   16 lj/cut/coul/long     0.155399     3.170000  # OW OW
+pair_coeff   17   17 lj/cut/coul/long     0.000000     0.000000  # HW1 HW1
+pair_coeff   18   18 lj/cut/coul/long     0.000000     0.000000  # HW2 HW2
+
+#minimize 1.0e-5 1.0e-7 1000 10000
+#write_data relax.data
+#reset_timestep 0
+
+fix SHAKE all shake 0.0001 20 0 b 6 7 9 10 12 13 14 15 16 17
+
+#neighbor 2.0 bin
+neigh_modify delay 0 every 1 check yes
+
+timestep 1.0
+
+variable TK equal 300.0
+variable TK_2 equal 500.0
+variable PBAR equal 1.0
+
+#velocity all create ${TK} 12345
+
+#fix TPSTAT all npt temp ${TK} ${TK} 100 iso ${PBAR} ${PBAR} 1000
+
+thermo 1000
+thermo_style custom step cpu etotal ke pe evdwl ecoul elong temp press vol density
+
+##dump TRAJ all custom 100 dump.lammpstrj id mol type element q xu yu zu
+##dump_modify TRAJ element O S O C C C C H H H H H H H H O H H
+
+restart 10000 restart1.lmp restart2.lmp
+
+# uncomment the following to rescale to average volume at end of equilibration
+#variable vinst equal vol
+#fix VAVG all ave/time 10 1000 50000 v_vinst
+
+#run 50000
+#write_data wsl_npt.data
+
+#variable lscale equal (f_VAVG/v_vinst)^(1.0/3.0)
+#print "scaling coordinates by ${lscale}"
+#change_box all x scale ${lscale} y scale ${lscale} z scale ${lscale} remap
+
+#unfix VAVG
+#unfix TPSTAT
+
+### NVT Ensemble (Equilibration) ###
+#fix TSTAT all nvt temp ${TK_2} ${TK_2} 100
+
+##dump TRAJ all custom 1000 wthf_nvt1.lammpstrj id mol type element q xu yu zu
+##dump_modify TRAJ element C C C O C H H H H H H H H O H H
+
+#run 500000
+#write_data wsl_nvt1.data
+
+fix TSTAT2 all nvt temp ${TK} ${TK} 100
+
+dump TRAJ2 all custom 1000 wsl_nvt3.lammpstrj id mol type element q xu yu zu
+dump_modify TRAJ2 element O S O C C C C H H H H H H H H O H H
+
+#variable t equal time
+#compute MSD all msd com yes
+#variable msd equal c_MSD[4]
+#fix PRMSD all print 2000 "${t} ${msd}" file msd.lammps screen no
+
+#compute myRDF all rdf 100 1 3 1 16 1 17 1 18 16 17 16 18
+#fix 4 all ave/time 100 1 100 c_myRDF[*] file wsl_nvt2.rdf mode vector
+
+run 15000000
+#write_data wsl_nvt2.data
